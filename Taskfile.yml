@@ -1,0 +1,13 @@
+version: '3'
+
+tasks:
+  dev:start:
+    cmds:
+      - docker compose up --build
+    # silent: true
+
+
+  # https://github.com/rimi-itk/common-voice/blob/main/docs/DEVELOPMENT.md#setup-steps
+  dev:flush-cache:
+    cmds:
+      - docker compose exec -it redis redis-cli FLUSHALL

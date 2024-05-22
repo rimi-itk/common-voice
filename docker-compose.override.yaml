@@ -1,0 +1,15 @@
+services:
+  db:
+    # https://docs.docker.com/compose/compose-file/13-merge/#reset-value
+    ports: !reset []
+
+  storage:
+    ports: !reset []
+
+  bundler:
+    ports: !reset []
+
+  web:
+    # https://docs.docker.com/compose/compose-file/13-merge/#replace-value
+    ports: !override
+      - 8888:9000
