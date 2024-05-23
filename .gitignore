@@ -34,3 +34,8 @@ nubis/builder/artifacts/*
 
 # WebStorm
 .idea/
+
+data/storage/
+.task.env.*
+.env-local-task
+.env.docker.local

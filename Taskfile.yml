@@ -1,13 +1,39 @@
 version: '3'
 
+dotenv: ['.env-local-task']
+
 tasks:
-  dev:start:
+  build:
     cmds:
-      - docker compose up --build
+      - task compose -- build
     # silent: true
 
+  up:
+    cmds:
+      - task compose -- up
+    # silent: true
 
   # https://github.com/rimi-itk/common-voice/blob/main/docs/DEVELOPMENT.md#setup-steps
-  dev:flush-cache:
+  redis-flush-all:
     cmds:
-      - docker compose exec -it redis redis-cli FLUSHALL
+      - task compose -- exec -it redis redis-cli FLUSHALL
+
+  compose:
+    cmds:
+      - ${COMPOSE_COMMAND:-docker compose --file docker-compose.yaml --file docker-compose.override.yaml} {{ .CLI_ARGS }}
+
+  # ------------------------------------------------------------------------------
+
+  sql:cli:
+    cmds:
+      - task compose -- exec db mysql --user=voicecommons --password=voicecommons voiceweb
+
+  sql:query:
+    cmds:
+      - task compose -- exec --no-TTY db mysql --user=voicecommons --password=voicecommons voiceweb
+
+  # ------------------------------------------------------------------------------
+
+  dev:open:
+    cmds:
+      - 'open "http://localhost:$(task compose -- port web 9000 | cut -d: -f2)/da"'

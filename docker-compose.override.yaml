@@ -1,15 +1,39 @@
+networks:
+  frontend:
+    external: true
+
 services:
   db:
+    container_name: !reset ~
     # https://docs.docker.com/compose/compose-file/13-merge/#reset-value
     ports: !reset []
 
+  redis:
+    container_name: !reset ~
+
   storage:
+    container_name: !reset ~
     ports: !reset []
+    volumes:
+      - ./data/storage:/storage
 
   bundler:
+    container_name: !reset ~
     ports: !reset []
 
   web:
+    container_name: !reset ~
     # https://docs.docker.com/compose/compose-file/13-merge/#replace-value
     ports: !override
-      - 8888:9000
+      - 9000
+      # - 8888:9000
+    networks:
+      - frontend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=frontend"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}.rule=Host(`${COMPOSE_DOMAIN}`)"
+      - "traefik.http.services.${COMPOSE_PROJECT_NAME}.loadbalancer.server.port=9000"
+      # We need https for the microphone to work in the browser.
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}.middlewares=redirect-to-https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
